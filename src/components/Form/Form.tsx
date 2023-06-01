@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import useLocalStorage from "../../utils/useLocalStorage";
 import { Contact } from "../../App";
 import { ContactBookI } from "../../redux/reducer";
 import { useDispatch, useSelector } from "react-redux";
