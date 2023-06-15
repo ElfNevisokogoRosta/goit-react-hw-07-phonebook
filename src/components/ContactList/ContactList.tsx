@@ -1,6 +1,6 @@
 import React from "react";
 import { ContactElement } from "../ContactElement/ContactElement";
-import { Contact } from "../../App";
+
 import {
   Container,
   Filter,
@@ -8,9 +8,9 @@ import {
   FilterContainer,
 } from "./ContactList.styled";
 import { useSelector, useDispatch } from "react-redux";
-import { ContactBookI } from "../../redux/reducer";
+import { ContactBookI, ContactI } from "../../utils/interfase";
 import { filterHandler as setFilter } from "../../redux/reducer";
-
+import { Audio } from "react-loader-spinner";
 export const ContactList: React.FC = () => {
   const dispatch = useDispatch();
   const contactBook = useSelector(
@@ -21,7 +21,6 @@ export const ContactList: React.FC = () => {
     const filterValue = e.target.value;
     dispatch(setFilter(filterValue));
   };
-
   return (
     <Container>
       <FilterContainer>
@@ -33,21 +32,30 @@ export const ContactList: React.FC = () => {
         />
       </FilterContainer>
 
-      {contactBook.contact.length > 0 ? (
+      {contactBook.contacts && contactBook.contacts.length > 0 ? (
         <ContactContainer>
-          {contactBook.contact &&
-            contactBook.contact
+          {contactBook &&
+            contactBook.contacts
               .filter((contact) =>
                 contact.name
                   .toLowerCase()
                   .includes(contactBook.filter.toLowerCase())
               )
-              .map((contact: Contact) => (
+              .map((contact: ContactI) => (
                 <ContactElement key={contact.id} contact={contact} />
               ))}
         </ContactContainer>
       ) : (
         <p className="alertData">Add some contacts</p>
+      )}
+      {contactBook.isLoading && (
+        <Audio
+          wrapperStyle={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        />
       )}
     </Container>
   );

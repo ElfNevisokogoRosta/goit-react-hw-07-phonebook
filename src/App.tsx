@@ -1,47 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form } from "./components/Form/Form";
 import { ContactList } from "./components/ContactList/ContactList";
-import { Btn, Container, Title } from "./App.styled";
-import { useDispatch, useSelector } from "react-redux";
-import { resetContactBook } from "./redux/reducer";
-import { ContactBookI } from "./redux/reducer";
-export interface Contact {
-  id: string;
-  name: string;
-  number: string;
-}
+import { Container, Title } from "./App.styled";
+import { fetchContacts } from "./redux/async.thunk";
+import { useAppDispatch } from "./redux/store";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App: React.FC = () => {
-  const dispatch = useDispatch();
-  const reduxContacts = useSelector(
-    (state: { contactBook: ContactBookI }) => state.contactBook.contact
-  );
-  const resetHandler = async (e: React.PointerEvent<HTMLButtonElement>) => {
-    const result = await confirmReset();
-    if (result) {
-      dispatch(resetContactBook());
-    }
-  };
+  const dispatch = useAppDispatch();
 
-  const confirmReset = (): Promise<boolean> => {
-    return new Promise((resolve) => {
-      const result = window.confirm(
-        `Are you sure you want to delete ${reduxContacts.length} contacts?`
-      );
-      resolve(result);
-    });
-  };
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <Container>
       <Title>Contact book</Title>
       <Form />
       <ContactList />
-      {reduxContacts.length > 0 ? (
-        <Btn onClick={resetHandler}>Reset all contact</Btn>
-      ) : (
-        ""
-      )}
+      <ToastContainer />
     </Container>
   );
 };

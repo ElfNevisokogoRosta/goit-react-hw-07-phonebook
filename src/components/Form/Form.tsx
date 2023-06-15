@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Contact } from "../../App";
-import { ContactBookI } from "../../redux/reducer";
-import { useDispatch, useSelector } from "react-redux";
-import { addContact } from "../../redux/reducer";
+import { useAppDispatch } from "../../redux/store";
+import { useSelector } from "react-redux";
+import { ContactBookI, ContactI } from "../../utils/interfase";
+import { addContact } from "../../redux/async.thunk";
+import { addContactR } from "../../redux/reducer";
 import {
   Formwraper,
   FormContainer,
@@ -11,31 +12,35 @@ import {
   NumberInput,
   Btn,
 } from "./Form.styled";
+import { toast } from "react-toastify";
+
 export const Form = () => {
   const [name, setName] = useState("");
   const [number, setNumber] = useState("");
-  const dispatch = useDispatch();
-  const reduxContacts = useSelector(
-    (state: { contactBook: ContactBookI }) => state.contactBook.contact
+  const contacts = useSelector(
+    (state: { contactBook: ContactBookI }) => state.contactBook.contacts
   );
+  const dispatch = useAppDispatch();
   const nameHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   };
   const numberHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNumber(e.target.value);
   };
-  const formHandler = (e: React.FormEvent<HTMLFormElement>): void => {
+  const formHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newContact: Contact = { id: uuidv4(), name, number };
-    const isInAList = reduxContacts.find(
+    const newContact: ContactI = { id: uuidv4(), name, number };
+    const isInAlist = contacts.some(
       (contact) => contact.name === newContact.name
     );
-    if (isInAList) {
-      return alert("This contact already in a list");
+
+    if (!isInAlist) {
+      dispatch(addContact(newContact));
+      dispatch(addContactR(newContact));
+      toast.success("New contact was added");
+    } else {
+      toast.error("Cannot add new contact with name what already existed");
     }
-    dispatch(addContact(newContact));
-    setName("");
-    setNumber("");
   };
 
   return (
