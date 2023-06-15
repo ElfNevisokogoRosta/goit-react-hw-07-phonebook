@@ -39,7 +39,7 @@ export const Form = () => {
       dispatch(addContactR(newContact));
       toast.success("New contact was added");
     } else {
-      toast.error("Cannot add new contact with name what already existed");
+      toast.error("Cannot add new contact with name which already existed");
     }
   };
 
